@@ -1,0 +1,160 @@
+###################################
+# This file is managed by Puppet. #
+###################################
+
+############################################################
+# Network Camera Connectivity
+############################################################
+
+# URL to use if you are using a network camera, size will be autodetected (incl http:// ftp:// mjpg:// rstp:// or file:///)
+# Must be a URL that returns single jpeg pictures or a raw mjpeg stream. Default: Not defined
+netcam_url <%= @netcam_url %>
+
+# Username and password for network camera (only if required). Default: not defined
+# Syntax is user:password
+<%- if @netcam_username and @netcam_password -%>
+netcam_userpass <%= @netcam_username %>:<%= @netcam_password %>
+<%- else -%>
+; netcam_userpass value
+<%- end -%>
+
+# The setting for keep-alive of network socket, should improve performance on compatible net cameras.
+# off:   The historical implementation using HTTP/1.0, closing the socket after each http request.
+# force: Use HTTP/1.0 requests with keep alive header to reuse the same connection.
+# on:    Use HTTP/1.1 requests that support keep alive as default.
+# Default: off
+netcam_keepalive <%= @netcam_keepalive %>
+
+# URL to use for a netcam proxy server, if required, e.g. "http://myproxy".
+# If a port number other than 80 is needed, use "http://myproxy:1234".
+# Default: not defined
+; netcam_proxy value
+
+# Set less strict jpeg checks for network cameras with a poor/buggy firmware.
+# Default: off
+netcam_tolerant_check <%= @netcam_tolerant_check %>
+
+
+############################################################
+# Live Stream Server
+############################################################
+
+# The mini-http server listens to this port for requests (default: 0 = disabled)
+stream_port <%= @stream_port %>
+
+# Quality of the jpeg (in percent) images produced (default: 50)
+stream_quality <%= @stream_quality %>
+
+# Output frames at 1 fps when no motion is detected and increase to the
+# rate given by stream_maxrate when motion is detected (default: off)
+stream_motion <%= @stream_motion %>
+
+# Maximum framerate for stream streams (default: 1)
+stream_maxrate <%= @stream_maxrate %>
+
+# Restrict stream connections to localhost only (default: on)
+stream_localhost <%= @stream_localhost %>
+
+# Limits the number of images per connection (default: 0 = unlimited)
+# Number can be defined by multiplying actual stream rate by desired number of seconds
+# Actual stream rate is the smallest of the numbers framerate and stream_maxrate
+stream_limit <%= @stream_limit %>
+
+# Set the authentication method (default: 0)
+# 0 = disabled
+# 1 = Basic authentication
+# 2 = MD5 digest (the safer authentication)
+<%- if @stream_username and @stream_password -%>
+stream_auth_method <%= @stream_auth_method %>
+
+# Authentication for the stream. Syntax username:password
+# Default: not defined (Disabled)
+stream_authentication <%= @stream_username %>:<%= @stream_password %>
+<%- else -%>
+stream_auth_method 0
+
+# Authentication for the stream. Syntax username:password
+# Default: not defined (Disabled)
+; stream_authentication value
+<%- end -%>
+
+
+############################################################
+# Motion Detection Settings:
+############################################################
+
+# Threshold for number of changed pixels in an image that
+# triggers motion detection (default: 1500)
+threshold <%= @threshold %>
+
+# Automatically tune the threshold down if possible (default: off)
+threshold_tune <%= @threshold_tune %>
+
+# Noise threshold for the motion detection (default: 32)
+noise_level <%= @noise_level %>
+
+# Automatically tune the noise threshold (default: on)
+noise_tune <%= @noise_tune %>
+
+# Despeckle motion image using (e)rode or (d)ilate or (l)abel (Default: not defined)
+# Recommended value is EedDl. Any combination (and number of) of E, e, d, and D is valid.
+# (l)abeling must only be used once and the 'l' must be the last letter.
+# Comment out to disable
+<%- if @despeckle_filter -%>
+despeckle_filter <%= @despeckle_filter %>
+<%- else -%>
+; despeckle_filter value
+<%- end -%>
+
+# Detect motion in predefined areas (1 - 9). Areas are numbered like that:  1 2 3
+# A script (on_area_detected) is started immediately when motion is         4 5 6
+# detected in one of the given areas, but only once during an event.        7 8 9
+# One or more areas can be specified with this option. Take care: This option
+# does NOT restrict detection to these areas! (Default: not defined)
+; area_detect value
+
+# PGM file to use as a sensitivity mask.
+# Full path name to. (Default: not defined)
+<%- if @mask_file_path -%>
+mask_file <%= @mask_file_path %>
+<%- else -%>
+; mask_file value
+<%- end -%>
+
+# Dynamically create a mask file during operation (default: 0)
+# Adjust speed of mask changes from 0 (off) to 10 (fast)
+smart_mask_speed <%= @smart_mask_speed %>
+
+# Ignore sudden massive light intensity changes given as a percentage of the picture
+# area that changed intensity. Valid range: 0 - 100 , default: 0 = disabled
+lightswitch <%= @lightswitch %>
+
+# Picture frames must contain motion at least the specified number of frames
+# in a row before they are detected as true motion. At the default of 1, all
+# motion is detected. Valid range: 1 to thousands, recommended 1-5
+minimum_motion_frames <%= @minimum_motion_frames %>
+
+# Specifies the number of pre-captured (buffered) pictures from before motion
+# was detected that will be output at motion detection.
+# Recommended range: 0 to 5 (default: 0)
+# Do not use large values! Large values will cause Motion to skip video frames and
+# cause unsmooth movies. To smooth movies use larger values of post_capture instead.
+pre_capture 0
+
+# Number of frames to capture after motion is no longer detected (default: 0)
+post_capture 0
+
+# Event Gap is the seconds of no motion detection that triggers the end of an event.
+# An event is defined as a series of motion images taken within a short timeframe.
+# Recommended value is 60 seconds (Default). The value -1 is allowed and disables
+# events causing all Motion to be written to one single movie file and no pre_capture.
+# If set to 0, motion is running in gapless mode. Movies don't have gaps anymore. An
+# event ends right after no more motion is detected and post_capture is over.
+event_gap <%= @event_gap %>
+
+# Maximum length in seconds of a movie
+# When value is exceeded a new movie file is created. (Default: 0 = infinite)
+max_movie_time <%= @max_movie_time %>
+
+# Always save images even if there was no motion (default: off)
+emulate_motion <%= @emulate_motion %>

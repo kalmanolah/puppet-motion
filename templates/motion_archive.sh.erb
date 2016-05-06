@@ -1,0 +1,26 @@
+#!/bin/bash
+
+ARCHIVE_DIR='<%= @var_dir %>'
+
+OLD_DIR=$(pwd)
+cd "${ARCHIVE_DIR}"
+
+YEAR=$(date -d 'yesterday' +%Y)
+mkdir -p "${ARCHIVE_DIR}/${YEAR}"
+
+ARCHIVE_NAME=$(date -d 'yesterday' +%Y-%m-%d)
+ARCHIVE_NAME="${ARCHIVE_DIR}/${YEAR}/${ARCHIVE_NAME}-archive.tar"
+
+ARCHIVE_FILES=($(find '.' -type f -daystart -ctime <%= @archive_threshold %> -printf '%P\n'))
+
+if [ -n "$ARCHIVE_FILES" ]; then
+    tar -cf "${ARCHIVE_NAME}"
+
+    for ARCHIVE_FILE in "${ARCHIVE_FILES[@]}"
+    do
+        tar -rf "${ARCHIVE_NAME}" "$ARCHIVE_FILE"
+    done
+    gzip -f "${ARCHIVE_NAME}"
+fi
+
+cd "${OLD_DIR}"

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+WORK_DIR='<%= @var_dir %>'
+
+OLD_DIR=$(pwd)
+cd "${WORK_DIR}"
+
+WORK_FILES=($(find '.' -type d -daystart -ctime +<%= @prune_threshold %> -printf '%P\n'))
+
+if [ -n "$WORK_FILES" ]; then
+    for WORK_FILE in "${WORK_FILES[@]}"
+    do
+        rm -rf "${WORK_FILE}"
+    done
+fi
+
+cd "${OLD_DIR}"
