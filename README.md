@@ -8,7 +8,7 @@ See http://lavrsen.dk/foswiki/bin/view/Motion/WebHome
 
 Check out the manifests. Usage example (hiera):
 
-```
+```yaml
 # hieradata/something.yaml
 classes:
     - motion
